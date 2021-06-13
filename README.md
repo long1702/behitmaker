@@ -195,3 +195,9 @@ Request (null or this)
 }
 Response, file you need
 ```
+#DOCKER
+```
+docker build -t hitmaker .
+docker run -p 127.0.0.1:80:4000 hitmaker gunicorn run:server_runner -b 0.0.0.0:4000 
+
+```
