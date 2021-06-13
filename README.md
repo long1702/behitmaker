@@ -3,46 +3,92 @@
 ```
 Request
 {
-    "timeSignature": "3/4",
-    "streamParts": [
+    "timeSignature": "4/4",
+    "streamParts": [//Each element of this array is a music cell
+      [//The First element of this array is the upper stream, the second is the lower stream
+        [
+          {
+           "note": "A",
+           "dur": "1/2"
+          },
+          {
+           "note": "A",
+           "dur": "1/2"
+          }
+        ],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
+        }]
+      ],
+      [
+        [{
+           "note": "A",
+           "dur": "1/2"
+          },
+         {
+           "note": "A",
+           "dur": "1/2"
         }],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
-        }]]
+           "dur": "1/2"
+        }]
+      ]
+    ]
 }
 
 Response
 {
-    "timeSignature": "3/4",
-    "streamParts": [
+    "timeSignature": "4/4",
+    "streamParts": [//Each element of this array is a music cell
+      [//The First element of this array is the upper stream, the second is the lower stream
+        [
+          {
+           "note": "A",
+           "dur": "1/2"
+          },
+          {
+           "note": "A",
+           "dur": "1/2"
+          }
+        ],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
+        }]
+      ],
+      [
+        [{
+           "note": "A",
+           "dur": "1/2"
+          },
+         {
+           "note": "A",
+           "dur": "1/2"
         }],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
-        }]]
+           "dur": "1/2"
+        }]
+      ]
+    ]
 }
 
 ```
@@ -51,25 +97,48 @@ Response
 ```
 Request
 {
-    "saveName": "abc"
-    "timeSignature": "3/4",
-    "streamParts": [
+    "saveName": "abc",
+    "timeSignature": "4/4",
+    "streamParts": [//Each element of this array is a music cell
+      [//The First element of this array is the upper stream, the second is the lower stream
+        [
+          {
+           "note": "A",
+           "dur": "1/2"
+          },
+          {
+           "note": "A",
+           "dur": "1/2"
+          }
+        ],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
+        }]
+      ],
+      [
+        [{
+           "note": "A",
+           "dur": "1/2"
+          },
+         {
+           "note": "A",
+           "dur": "1/2"
         }],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
-        }]]
+           "dur": "1/2"
+        }]
+      ]
+    ]
 }
 Response
 {
@@ -81,26 +150,48 @@ Response
 ```
 Request (null or this)
 {
-    "saveName": "abc"
-    "timeSignature": "3/4",
-    "streamParts": [
+    "saveName": "abc",
+    "timeSignature": "4/4",
+    "streamParts": [//Each element of this array is a music cell
+      [//The First element of this array is the upper stream, the second is the lower stream
+        [
+          {
+           "note": "A",
+           "dur": "1/2"
+          },
+          {
+           "note": "A",
+           "dur": "1/2"
+          }
+        ],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
+        }]
+      ],
+      [
+        [{
+           "note": "A",
+           "dur": "1/2"
+          },
+         {
+           "note": "A",
+           "dur": "1/2"
         }],
         [{
            "note": "A",
-           "dur": "1/4"
+           "dur": "1/2"
           },
          {
            "note": "A",
-           "dur": "1/4"
-        }]]
+           "dur": "1/2"
+        }]
+      ]
+    ]
 }
-
 Response, file you need
 ```
