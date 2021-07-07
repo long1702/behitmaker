@@ -4,91 +4,45 @@
 Request
 {
     "timeSignature": "4/4",
-    "streamParts": [//Each element of this array is a music cell
-      [//The First element of this array is the upper stream, the second is the lower stream
-        [
-          {
-           "note": "A",
-           "dur": "1/2"
-          },
-          {
-           "note": "A",
-           "dur": "1/2"
-          }
-        ],
+    "streamParts": [
         [{
            "note": "A",
-           "dur": "1/2"
+           "dur": "16"
           },
          {
            "note": "A",
-           "dur": "1/2"
-        }]
-      ],
-      [
-        [{
-           "note": "A",
-           "dur": "1/2"
-          },
-         {
-           "note": "A",
-           "dur": "1/2"
+           "dur": "16"
         }],
         [{
            "note": "A",
-           "dur": "1/2"
+           "dur": "16"
           },
          {
            "note": "A",
-           "dur": "1/2"
-        }]
-      ]
-    ]
+           "dur": "16"
+        }]]
 }
 
 Response
 {
     "timeSignature": "4/4",
-    "streamParts": [//Each element of this array is a music cell
-      [//The First element of this array is the upper stream, the second is the lower stream
-        [
-          {
-           "note": "A",
-           "dur": "1/2"
-          },
-          {
-           "note": "A",
-           "dur": "1/2"
-          }
-        ],
+    "streamParts": [
         [{
            "note": "A",
-           "dur": "1/2"
+           "dur": "16"
           },
          {
            "note": "A",
-           "dur": "1/2"
-        }]
-      ],
-      [
-        [{
-           "note": "A",
-           "dur": "1/2"
-          },
-         {
-           "note": "A",
-           "dur": "1/2"
+           "dur": "16"
         }],
         [{
            "note": "A",
-           "dur": "1/2"
+           "dur": "16"
           },
          {
            "note": "A",
-           "dur": "1/2"
-        }]
-      ]
-    ]
+           "dur": "16"
+        }]]
 }
 
 ```
@@ -99,46 +53,23 @@ Request
 {
     "saveName": "abc",
     "timeSignature": "4/4",
-    "streamParts": [//Each element of this array is a music cell
-      [//The First element of this array is the upper stream, the second is the lower stream
-        [
-          {
-           "note": "A",
-           "dur": "1/2"
-          },
-          {
-           "note": "A",
-           "dur": "1/2"
-          }
-        ],
+    "streamParts": [
         [{
            "note": "A",
-           "dur": "1/2"
+           "dur": "16"
           },
          {
            "note": "A",
-           "dur": "1/2"
-        }]
-      ],
-      [
-        [{
-           "note": "A",
-           "dur": "1/2"
-          },
-         {
-           "note": "A",
-           "dur": "1/2"
+           "dur": "16"
         }],
         [{
            "note": "A",
-           "dur": "1/2"
+           "dur": "16"
           },
          {
            "note": "A",
-           "dur": "1/2"
-        }]
-      ]
-    ]
+           "dur": "16"
+        }]]
 }
 Response
 {
