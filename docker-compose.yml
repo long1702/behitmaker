@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+    base:
+        build: ./
+        image: "hitmaker"
+
+    mongo:
+        image: mongo:4.2.5
+        ports:
+            - 27017:27017
+
+    app:
+        extends: 
+            service: base
+        command: bash -c "./scripts/run_service.sh"
+        volumes:
+            - ./:/source/hitmaker
+          
+        environment: 
+        - DB_LINK=mongo
+        - DB_NAME=$DB_NAME
+        - DB_PORT=$DB_PORT
+        ports:
+            - 4000:4000
+        links:
+            - mongo
+        depends_on:
+            - mongo

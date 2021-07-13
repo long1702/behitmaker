@@ -2,15 +2,22 @@ import threading
 import socket
 import logging
 import os
+import uuid
+import jwt
+import app_utils
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 from http.server import HTTPServer
 from prometheus_client import MetricsHandler
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify, make_response
+from functools import wraps
+from music21 import note, stream
 
-hostName = "0.0.0.0"
-dir = './'
+hostName = '0.0.0.0'
+os_dir = './'
 PROMETHEUS_PORT = 8000
 CRAWL_PERIOD = 86400
-
+mongo_utils = None
 
 class PrometheusEndpointServer(threading.Thread):
     """A thread class that holds an http and makes it serve_forever()."""
@@ -36,24 +43,172 @@ def start_prometheus_server():
 
 server = Flask(__name__)
 start_prometheus_server()
+server.config['SECRET_KEY'] = 'gangofbede'
+
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        # jwt is passed in the request header
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization']
+        # return 401 if token is not passed
+        if not token:
+            return jsonify({'message': 'Token is missing !!'}), 401
+
+        try:
+            # decoding the payload to fetch the stored details
+            global mongo_utils
+            if mongo_utils is None:
+                mongo_utils = app_utils.get_mongo_utils()
+
+            data = jwt.decode(token.split()[1], server.config['SECRET_KEY'])
+            expire_time = data.get('exp', None)
+
+            if expire_time is None or expire_time < int(datetime.now().timestamp() * 1000):
+                return jsonify({
+                    'message': 'Token is Expire!!'
+                }), 401
+
+            current_user = mongo_utils.get_record_by_public_id(data.get('publicId'))
+            if not current_user:
+                return jsonify({
+                    'message': 'Token is invalid !!'
+                }), 401
+        except:
+            return jsonify({
+                'message': 'Token is invalid !!'
+            }), 401
+        # returns the current logged in users contex to the routes
+        return f(current_user, *args, **kwargs)
+
+    return decorated
 
 
 @server.route('/generate',  methods=['POST'])
-def generate():
+@token_required
+def generate(current_user):
     data_handler = request.get_json()
     return data_handler
 
 
 @server.route('/save', methods=['POST'])
-def save():
+@token_required
+def save(current_user):
     data_handler = request.get_json()
-    return data_handler
+    public_id = current_user.get('publicId', None)
+    global mongo_utils
+    if mongo_utils is None:
+        mongo_utils = app_utils.get_mongo_utils()
+    mongo_utils.update_data(public_id, data_handler)
+    return make_response(data_handler, 200)
 
 
-@server.route('/download/<path:filename>', methods=['POST'])
-def download(filename):
-    path = os.path.join(dir, filename)
+@server.route('/download', methods=['POST'])
+@token_required
+def download(current_user):
+    user_datas = current_user.get('data', [])
+    if not user_datas:
+        return make_response('Null File', 404)
+    stream_parts = user_datas[0].get('streamParts')
+    key = user_datas[0].get('keySignature', 'C')
+    file_name = user_datas[0].get('saveName', 'proto') + '.mid'
+    path = os.path.join(os_dir,file_name)
+    time_signature = user_datas[0].get('timeSignature', '4/4')
+    part_1 = app_utils.from_json_to_stream_part(stream_parts[0], key, time_signature)
+    part_2 = app_utils.from_json_to_stream_part(stream_parts[1], key, time_signature)
+
+    if len(part_1) != len(part_2):
+        m_temp = stream.Measure()
+        rest = note.Rest(quarterLength=float(time_signature.split('/')[0]))
+        m_temp.append(rest)
+        part_1.append(m_temp) if len(part_1) < len(part_2) else part_2.append(m_temp)
+
+    result = stream.Score()
+    result.insert(0, part_1)
+    result.insert(0, part_2)
+    result.write('midi', fp=path)
     return send_file(path, as_attachment=True)
+
+
+@server.route('/login', methods=['POST'])
+def login():
+    # creates dictionary of form data
+    auth = request.get_json()
+
+    if not auth or not auth.get('username') or not auth.get('password'):
+        # returns 401 if any email or / and password is missing
+        return make_response(
+            'Could not verify',
+            401,
+            {'WWW-Authenticate': 'Basic realm ="Login required !!"'}
+        )
+
+    global mongo_utils
+    if mongo_utils is None:
+        mongo_utils = app_utils.get_mongo_utils()
+
+    user = mongo_utils.get_record_by_username(auth.get('username'))
+
+    if not user or not user.get('publicId', None):
+        # returns 401 if user does not exist
+        return make_response(
+            'Could not verify',
+            401,
+            {'WWW-Authenticate': 'Basic realm ="User does not exist !!"'}
+        )
+
+    if check_password_hash(user.get('password', ''), auth.get('password')):
+        # generates the JWT Token
+        token = jwt.encode({
+            'publicId': user.get('publicId'),
+            'exp': 	int(round((datetime.now() + timedelta(minutes=30)).timestamp() * 1000))
+        }, server.config['SECRET_KEY'])
+
+        return make_response(jsonify({
+            'token': token.decode('UTF-8'),
+            'name': user.get('name', ''),
+            'data': user.get('data', [])}), 201)
+    # returns 403 if password is wrong
+    return make_response(
+        'Could not verify',
+        403,
+        {'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}
+    )
+
+
+# signup route
+@server.route('/signup', methods=['POST'])
+def signup():
+    # creates a dictionary of the form data
+    data = request.get_json()
+
+    # gets name, email and password
+    name, username = data.get('name', ''), data.get('userName')
+    password = data.get('password')
+
+    # checking for existing user
+    global mongo_utils
+    if mongo_utils is None:
+        mongo_utils = app_utils.get_mongo_utils()
+    user = mongo_utils.get_record_by_username(username)
+
+    if not user:
+        # database ORM object
+        user_record = {
+            'publicId': str(uuid.uuid4()),
+            'userName': username,
+            'name': name,
+            'password': generate_password_hash(password),
+            'data': []
+        }
+        # insert user
+        mongo_utils.insert_new_record(user_record)
+        return make_response('Successfully registered.', 201)
+    else:
+        # returns 202 if user already exists
+        return make_response('UserName already exists. Please Log in.', 202)
 
 
 if __name__ == '__main__':

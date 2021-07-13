@@ -21,12 +21,15 @@ class MusicItem():
     @classmethod
     def from_file(cls, midi_file, vocab): 
         return cls.from_stream(file2stream(midi_file), vocab)
+
     @classmethod
     def from_stream(cls, stream, vocab):
-        if not isinstance(stream, music21.stream.Score): stream = stream.voicesToParts()
-        chordarr = stream2chordarr(stream) # 2.
-        npenc = chordarr2npenc(chordarr) # 3.
+        if not isinstance(stream, music21.stream.Score):
+            stream = stream.voicesToParts()
+        chordarr = stream2chordarr(stream)  # 2.
+        npenc = chordarr2npenc(chordarr)  # 3.
         return cls.from_npenc(npenc, vocab, stream)
+
     @classmethod
     def from_npenc(cls, npenc, vocab, stream=None): return MusicItem(npenc2idxenc(npenc, vocab), vocab, stream)
     
@@ -34,6 +37,7 @@ class MusicItem():
     def from_idx(cls, item, vocab):
         idx,pos = item
         return MusicItem(idx, vocab=vocab, position=pos)
+
     def to_idx(self): return self.data, self.position
     
     @classmethod
@@ -65,6 +69,7 @@ class MusicItem():
 
     def show(self, format:str=None):
         return self.stream.show(format)
+
     def play(self): self.stream.show('midi')
         
     @property
@@ -106,26 +111,31 @@ class MusicItem():
 
     def split_parts(self):
         return self.new(self.data, stream=separate_melody_chord(self.stream), position=self.position)
-        
+
+
 def pad_seq(seq, bptt, value):
     pad_len = max(bptt-seq.shape[0], 0)
     return np.pad(seq, (0, pad_len), 'constant', constant_values=value)[:bptt]
+
 
 def to_tensor(t, device=None):
     t = t if isinstance(t, torch.Tensor) else torch.tensor(t)
     if device is None and torch.cuda.is_available(): t = t.cuda()
     else: t.to(device)
     return t.long()
-    
+
+
 def midi2idxenc(midi_file, vocab):
     "Converts midi file to index encoding for training"
     npenc = midi2npenc(midi_file) # 3.
     return npenc2idxenc(npenc, vocab)
 
+
 def idxenc2stream(arr, vocab, bpm=120):
     "Converts index encoding to music21 stream"
     npenc = idxenc2npenc(arr, vocab)
     return npenc2stream(npenc, bpm=bpm)
+
 
 # single stream instead of note,dur
 def npenc2idxenc(t, vocab, seq_type=SEQType.Sentence, add_eos=False):
@@ -142,12 +152,14 @@ def npenc2idxenc(t, vocab, seq_type=SEQType.Sentence, add_eos=False):
     suffix = np.array([vocab.stoi[EOS]]) if add_eos else np.empty(0, dtype=int)
     return np.concatenate([prefix, t.reshape(-1), suffix])
 
+
 def seq_prefix(seq_type, vocab):
     if seq_type == SEQType.Empty: return np.empty(0, dtype=int)
     start_token = vocab.bos_idx
     if seq_type == SEQType.Chords: start_token = vocab.stoi[CSEQ]
     if seq_type == SEQType.Melody: start_token = vocab.stoi[MSEQ]
     return np.array([start_token, vocab.pad_idx])
+
 
 def idxenc2npenc(t, vocab, validate=True):
     if validate: t = to_valid_idxenc(t, vocab.npenc_range)
@@ -160,11 +172,13 @@ def idxenc2npenc(t, vocab, validate=True):
     if validate: return to_valid_npenc(t)
     return t
 
+
 def to_valid_idxenc(t, valid_range):
     r = valid_range
     t = t[np.where((t >= r[0]) & (t < r[1]))]
     if t.shape[-1] % 2 == 1: t = t[..., :-1]
     return t
+
 
 def to_valid_npenc(t):
     is_note = (t[:, 0] < VALTSEP) | (t[:, 0] >= NOTE_SIZE)
@@ -178,6 +192,7 @@ def to_valid_npenc(t):
         return t[:invalid_idx]
     return t
 
+
 def position_enc(idxenc, vocab):
     "Calculates positional beat encoding."
     sep_idxs = (idxenc == vocab.sep_idx).nonzero()[0]
@@ -190,6 +205,7 @@ def position_enc(idxenc, vocab):
     posenc[sep_idxs+2] = dur_vals
     return posenc.cumsum()
 
+
 def beat2index(idxenc, pos, vocab, beat, include_last_sep=False):
     cutoff = find_beat(pos, beat)
     if cutoff < 2: return 2 # always leave starter tokens
@@ -197,25 +213,31 @@ def beat2index(idxenc, pos, vocab, beat, include_last_sep=False):
     if idxenc[cutoff - 2] == vocab.sep_idx: return cutoff - 2
     return cutoff
 
+
 def find_beat(pos, beat, sample_freq=SAMPLE_FREQ, side='left'):
     return np.searchsorted(pos, beat * sample_freq, side=side)
 
+
 # TRANSFORMS
+
 
 def tfm_transpose(x, value, vocab):
     x = x.copy()
     x[(x >= vocab.note_range[0]) & (x < vocab.note_range[1])] += value
     return x
 
+
 def trim_to_beat(idxenc, pos, vocab, to_beat=None, include_last_sep=True):
     if to_beat is None: return idxenc
     cutoff = beat2index(idxenc, pos, vocab, to_beat, include_last_sep=include_last_sep)
     return idxenc[:cutoff]
 
+
 def mask_input(xb, mask_range, replacement_idx):
     xb = xb.copy()
     xb[(xb >= mask_range[0]) & (xb < mask_range[1])] = replacement_idx
     return xb
+
 
 def mask_section(xb, pos, token_range, replacement_idx, section_range=None):
     xb = xb.copy()
