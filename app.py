@@ -1,3 +1,4 @@
+import io
 import threading
 import socket
 import logging
@@ -6,10 +7,11 @@ import uuid
 import jwt
 import app_utils
 from werkzeug.security import generate_password_hash, check_password_hash
+from multiprocessing import Process
 from datetime import datetime, timedelta
 from http.server import HTTPServer
 from prometheus_client import MetricsHandler
-from flask import Flask, request, send_file, jsonify, make_response
+from flask import Flask, request, send_file, jsonify, make_response, after_this_request
 from functools import wraps
 from music21 import note, stream
 
@@ -89,8 +91,16 @@ def token_required(f):
 @server.route('/generate',  methods=['POST'])
 @token_required
 def generate(current_user):
-    data_handler = request.get_json()
-    return data_handler
+    user_data = request.get_json()
+    score = app_utils.from_json_to_score(user_data)
+    # TODO Call Model
+    result = score
+    global mongo_utils
+    if mongo_utils is None:
+        mongo_utils = app_utils.get_mongo_utils()
+    json_result = app_utils.from_score_to_json(result, user_data)
+    mongo_utils.update_data(current_user.get('publicId'), json_result)
+    return json_result
 
 
 @server.route('/save', methods=['POST'])
@@ -108,26 +118,13 @@ def save(current_user):
 @server.route('/download', methods=['POST'])
 @token_required
 def download(current_user):
-    user_datas = current_user.get('data', [])
-    if not user_datas:
+    user_data = current_user.get('data', [])
+    if not user_data:
         return make_response('Null File', 404)
-    stream_parts = user_datas[0].get('streamParts')
-    key = user_datas[0].get('keySignature', 'C')
-    file_name = user_datas[0].get('saveName', 'proto') + '.mid'
-    path = os.path.join(os_dir,file_name)
-    time_signature = user_datas[0].get('timeSignature', '4/4')
-    part_1 = app_utils.from_json_to_stream_part(stream_parts[0], key, time_signature)
-    part_2 = app_utils.from_json_to_stream_part(stream_parts[1], key, time_signature)
 
-    if len(part_1) != len(part_2):
-        m_temp = stream.Measure()
-        rest = note.Rest(quarterLength=float(time_signature.split('/')[0]))
-        m_temp.append(rest)
-        part_1.append(m_temp) if len(part_1) < len(part_2) else part_2.append(m_temp)
-
-    result = stream.Score()
-    result.insert(0, part_1)
-    result.insert(0, part_2)
+    file_name = user_data[0].get('saveName', 'proto') + '.mid'
+    path = os.path.join(os_dir, file_name)
+    result = app_utils.from_json_to_score(user_data[0])
     result.write('midi', fp=path)
     return send_file(path, as_attachment=True)
 
