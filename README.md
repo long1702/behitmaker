@@ -77,7 +77,6 @@ Status  |   Meaning
 ```
 ### Generate (path /generate)
 ```
-Request
 {   
     "timeSignature": "3/4",
     "keySignature": "D",
@@ -87,12 +86,12 @@ Request
            "dur": "16"
           },
          {
-           "note": "F",
+           "note": "F/4",
            "dur": "8"
         },
         {
             "keySignature": "B-",
-            "note": "F",
+            "note": "F/4",
             "dur": "24"
         },
         {//no note or chords means Rest
@@ -100,11 +99,11 @@ Request
         },
         ],
         [{
-           "note": "F",
+           "note": "F/4",
            "dur": "16"
           },
             {
-                "note": "F",
+                "note": "F/4",
                 "dur": "8"
             }
         ]]
@@ -120,12 +119,12 @@ Response
            "dur": "16"
           },
          {
-           "note": "F",
+           "note": "F/4",
            "dur": "8"
         },
         {
             "keySignature": "B-",
-            "note": "F",
+            "note": "F/4",
             "dur": "24"
         },
         {//no note or chords means Rest
@@ -133,11 +132,11 @@ Response
         },
         ],
         [{
-           "note": "F",
+           "note": "F/4",
            "dur": "16"
           },
             {
-                "note": "F",
+                "note": "F/4",
                 "dur": "8"
             }
         ]]
@@ -150,6 +149,7 @@ Response
 ```
 Request
 {   
+    "saveName": 'abc',
     "timeSignature": "3/4",
     "keySignature": "D",
     "streamParts": [
@@ -158,12 +158,12 @@ Request
            "dur": "16"
           },
          {
-           "note": "F",
+           "note": "F/4",
            "dur": "8"
         },
         {
             "keySignature": "B-",
-            "note": "F",
+            "note": "F/4",
             "dur": "24"
         },
         {//no note or chords means Rest
@@ -171,17 +171,18 @@ Request
         },
         ],
         [{
-           "note": "F",
+           "note": "F/4",
            "dur": "16"
           },
             {
-                "note": "F",
+                "note": "F/4",
                 "dur": "8"
             }
         ]]
 }
 Response 
 {   
+    "saveName": 'abc',
     "timeSignature": "3/4",
     "keySignature": "D",
     "streamParts": [
@@ -190,12 +191,12 @@ Response
            "dur": "16"
           },
          {
-           "note": "F",
+           "note": "F/4",
            "dur": "8"
         },
         {
             "keySignature": "B-",
-            "note": "F",
+            "note": "F/4",
             "dur": "24"
         },
         {//no note or chords means Rest
@@ -203,11 +204,11 @@ Response
         },
         ],
         [{
-           "note": "F",
+           "note": "F/4",
            "dur": "16"
           },
             {
-                "note": "F",
+                "note": "F/4",
                 "dur": "8"
             }
         ]]
