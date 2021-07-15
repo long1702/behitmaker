@@ -47,8 +47,10 @@ def from_json_to_stream_part(stream_part, key_signature, time_signature):
             m01.append(key.Key(notes.get('keySignature')))
         if 'chord' in notes:
             m01.append(chord.Chord([x.replace('/', '') for x in notes.get('chord')], quarterLength=duration))
-        else:
+        elif 'note' in notes:
             m01.append(note.Note(notes.get('note').replace('/', ''), quarterLength=duration))
+        else:
+            m01.append(note.Rest(quarterLength=duration))
         counter -= duration
         if counter == 0:
             part_1.append(m01)
@@ -69,7 +71,7 @@ def from_score_to_json(score: stream.Score, current_data):
     data = [from_stream_part_to_json(score.parts[0], current_time, current_key),
             from_stream_part_to_json(score.parts[1], current_time, current_key)]
     result = {
-        'data': data,
+        'streamParts': data,
         'timeSignature': current_time,
         'keySignature': current_key
     }

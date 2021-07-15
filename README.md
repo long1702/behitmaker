@@ -1,129 +1,223 @@
 # Hit-Maker
-### Generate (path /generate)
+
+### SignUp (path /signup)
 ```
 Request
 {
-    "timeSignature": "4/4",
-    "streamParts": [
-        [{
-           "note": "A",
-           "dur": "16"
-          },
-         {
-           "note": "A",
-           "dur": "16"
-        }],
-        [{
-           "note": "A",
-           "dur": "16"
-          },
-         {
-           "note": "A",
-           "dur": "16"
-        }]]
+	"username":"long.nguyen1",
+	"password": "123456",
+	"name": "Abcxyz"
 }
 
 Response
+Status  |   Meaning
+201     |   Success
+202     |   UserName is registered
+
+```
+
+### Login (path /login)
+```
+Request
 {
-    "timeSignature": "4/4",
+	"username":"long.nguyen",
+	"password": "123456"
+}
+Response Success
+{
+  "data": [
+    {
+      "keySignature": "D",
+      "saveName": "abc",
+      "streamParts": [
+        [
+          {
+            "chord": [
+              "F/4",
+              "E/5",
+              "B#/4"
+            ],
+            "dur": "16"
+          },
+          {
+            "dur": "8",
+            "note": "F"
+          },
+          {
+            "dur": "24",
+            "keySignature": "B-",
+            "note": "F"
+          },
+          {
+            "dur": "4",
+            "note": "F"
+          }
+        ],
+        [
+          {
+            "dur": "16",
+            "note": "F"
+          },
+          {
+            "dur": "8",
+            "note": "F"
+          }
+        ]
+      ],
+      "timeSignature": "3/4"
+    }
+  ],
+  "name": "Long",
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6ImM3OGQ5ZjBiLWM1NDUtNGUyYi1hZTM4LTA3ODFkZTg4ZGZjOCIsImV4cCI6MTYyNjM3NDQ1OTk3Nn0.l_JxHDdedHFrT7A7o4RKRa0OEaMph7yRazldPGC8dLE"
+}
+
+Status  |   Meaning
+401     |   User not exist or null Password
+403     |   Wrong Password
+```
+### Generate (path /generate)
+```
+Request
+{   
+    "timeSignature": "3/4",
+    "keySignature": "D",
     "streamParts": [
         [{
-           "note": "A",
+           "chord": ["F/4", "E/5", "B#/4"],
            "dur": "16"
           },
          {
-           "note": "A",
-           "dur": "16"
-        }],
+           "note": "F",
+           "dur": "8"
+        },
+        {
+            "keySignature": "B-",
+            "note": "F",
+            "dur": "24"
+        },
+        {//no note or chords means Rest
+            "dur": "4"
+        },
+        ],
         [{
-           "note": "A",
+           "note": "F",
+           "dur": "16"
+          },
+            {
+                "note": "F",
+                "dur": "8"
+            }
+        ]]
+}
+
+Response
+{   
+    "timeSignature": "3/4",
+    "keySignature": "D",
+    "streamParts": [
+        [{
+           "chord": ["F/4", "E/5", "B#/4"],
            "dur": "16"
           },
          {
-           "note": "A",
+           "note": "F",
+           "dur": "8"
+        },
+        {
+            "keySignature": "B-",
+            "note": "F",
+            "dur": "24"
+        },
+        {//no note or chords means Rest
+            "dur": "4"
+        },
+        ],
+        [{
+           "note": "F",
            "dur": "16"
-        }]]
+          },
+            {
+                "note": "F",
+                "dur": "8"
+            }
+        ]]
 }
 
 ```
 
 ### Save (path /save)
+## Save your data to mongoDb
 ```
 Request
-{
-    "saveName": "abc",
-    "timeSignature": "4/4",
+{   
+    "timeSignature": "3/4",
+    "keySignature": "D",
     "streamParts": [
         [{
-           "note": "A",
+           "chord": ["F/4", "E/5", "B#/4"],
            "dur": "16"
           },
          {
-           "note": "A",
-           "dur": "16"
-        }],
-        [{
-           "note": "A",
-           "dur": "16"
-          },
-         {
-           "note": "A",
-           "dur": "16"
-        }]]
-}
-Response
-{
-    "result" : "OK",
-    "path" : "./a/b/abc.mid"
-}
-```
-### Download (path /download/<path:filename>)
-```
-Request (null or this)
-{
-    "saveName": "abc",
-    "timeSignature": "4/4",
-    "streamParts": [//Each element of this array is a music cell
-      [//The First element of this array is the upper stream, the second is the lower stream
-        [
-          {
-           "note": "A",
-           "dur": "1/2"
-          },
-          {
-           "note": "A",
-           "dur": "1/2"
-          }
+           "note": "F",
+           "dur": "8"
+        },
+        {
+            "keySignature": "B-",
+            "note": "F",
+            "dur": "24"
+        },
+        {//no note or chords means Rest
+            "dur": "4"
+        },
         ],
         [{
-           "note": "A",
-           "dur": "1/2"
+           "note": "F",
+           "dur": "16"
           },
-         {
-           "note": "A",
-           "dur": "1/2"
-        }]
-      ],
-      [
-        [{
-           "note": "A",
-           "dur": "1/2"
-          },
-         {
-           "note": "A",
-           "dur": "1/2"
-        }],
-        [{
-           "note": "A",
-           "dur": "1/2"
-          },
-         {
-           "note": "A",
-           "dur": "1/2"
-        }]
-      ]
-    ]
+            {
+                "note": "F",
+                "dur": "8"
+            }
+        ]]
 }
+Response 
+{   
+    "timeSignature": "3/4",
+    "keySignature": "D",
+    "streamParts": [
+        [{
+           "chord": ["F/4", "E/5", "B#/4"],
+           "dur": "16"
+          },
+         {
+           "note": "F",
+           "dur": "8"
+        },
+        {
+            "keySignature": "B-",
+            "note": "F",
+            "dur": "24"
+        },
+        {//no note or chords means Rest
+            "dur": "4"
+        },
+        ],
+        [{
+           "note": "F",
+           "dur": "16"
+          },
+            {
+                "note": "F",
+                "dur": "8"
+            }
+        ]]
+}
+```
+### Download (path /download/)
+## this API will convert your data in mongoDb to midi and send it to you
+```
+Request
+{}
 Response, file you need
 ```
 #DOCKER
