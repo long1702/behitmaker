@@ -102,12 +102,19 @@ def from_stream_part_to_json(stream_part: stream.Part, time, key_sign):
             data.append(json_element)
             continue
         if isinstance(element, note.Note):
-            json_element['note'] = str(element.pitch)
+            print(str(element.pitch))
+            json_element['note'] = refactor_note_output(str(element.pitch))
             data.append(json_element)
             continue
         if isinstance(element, chord.Chord):
-            json_element['chord'] = [str(chord_note.pitch) for chord_note in element.notes]
+            json_element['chord'] = [refactor_note_output(str(chord_note.pitch)) for chord_note in element.notes]
             data.append(json_element)
             continue
 
     return data
+
+
+def refactor_note_output(string_note):
+    if not string_note[-1].isnumeric():
+        return string_note + '/' + '4'
+    return string_note[:-1] + '/' + string_note[-1]
