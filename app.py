@@ -1,4 +1,3 @@
-import io
 import threading
 import socket
 import logging
@@ -7,13 +6,11 @@ import uuid
 import jwt
 import app_utils
 from werkzeug.security import generate_password_hash, check_password_hash
-from multiprocessing import Process
 from datetime import datetime, timedelta
 from http.server import HTTPServer
 from prometheus_client import MetricsHandler
 from flask import Flask, request, send_file, jsonify, make_response, after_this_request
 from functools import wraps
-from music21 import note, stream
 
 hostName = '0.0.0.0'
 os_dir = './'
@@ -45,7 +42,7 @@ def start_prometheus_server():
 
 server = Flask(__name__)
 start_prometheus_server()
-server.config['SECRET_KEY'] = 'gangofbede'
+server.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 
 def token_required(f):
@@ -170,7 +167,7 @@ def login():
     # returns 403 if password is wrong
     return make_response(
         'Could not verify',
-        403,
+        401,
         {'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}
     )
 
@@ -182,7 +179,7 @@ def signup():
     data = request.get_json()
 
     # gets name, email and password
-    name, username = data.get('name', ''), data.get('userName')
+    name, username = data.get('name', ''), data.get('username')
     password = data.get('password')
 
     # checking for existing user

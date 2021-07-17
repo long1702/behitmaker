@@ -8,7 +8,7 @@ def get_database(url, name, port):
     return database
 
 
-DB_LINK = 'localhost'  # os.environ.get('DB_LINK')
-DB_NAME = 'BEHitMakerDb'  # os.environ.get('DB_NAME')
-DB_PORT = 27017  # os.environ.get('DB_PORT', 27017)
+DB_LINK = os.environ.get('DB_LINK')
+DB_NAME = os.environ.get('DB_NAME')
+DB_PORT = os.environ.get('DB_PORT', 27017)
 DB = get_database(DB_LINK, DB_NAME, int(DB_PORT))

@@ -8,7 +8,5 @@ fastai==1.0.61
 PyJWT==1.6.4
 pymongo
 pebble
-fluidsynth
-midi2audio
 music21
-torch
+

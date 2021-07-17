@@ -73,7 +73,7 @@ Response Success
 
 Status  |   Meaning
 401     |   User not exist or null Password
-403     |   Wrong Password
+401     |   Wrong Password
 ```
 ### Generate (path /generate)
 ```
@@ -223,7 +223,6 @@ Response, file you need
 ```
 #DOCKER
 ```
-docker build -t hitmaker .
-docker run -p 127.0.0.1:80:4000 hitmaker gunicorn run:server_runner -b 0.0.0.0:4000 
-
+docker-compose build //đợi lâu vcl ý nên chạy xong ngồi làm gì khác đi
+docker-compose up //post vào link 127.0.0.1:4000 nhé
 ```
