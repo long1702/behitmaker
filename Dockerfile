@@ -7,5 +7,6 @@ RUN pip install -r /source/hit-maker/requirements.txt
 
 ADD ./ /source/hit-maker
 WORKDIR /source/hit-maker
-RUN chmod 777 ./script/run_service.sh
+RUN chmod +x ./script/run_service.sh
+
 
