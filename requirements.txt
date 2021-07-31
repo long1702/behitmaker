@@ -6,6 +6,7 @@ prometheus-client==0.8.0
 gunicorn==20.0.4
 fastai==1.0.61
 PyJWT==1.6.4
+flask-cors
 pymongo
 pebble
 music21

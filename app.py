@@ -11,6 +11,9 @@ from http.server import HTTPServer
 from prometheus_client import MetricsHandler
 from flask import Flask, request, send_file, jsonify, make_response, after_this_request
 from functools import wraps
+from flask_cors import CORS
+
+import model_utils
 
 hostName = '0.0.0.0'
 os_dir = './'
@@ -40,7 +43,11 @@ def start_prometheus_server():
     logging.info("Exporting Prometheus /metrics/ on port %s", PROMETHEUS_PORT)
 
 
+
+
 server = Flask(__name__)
+CORS(server)
+model_utils.init_model()
 start_prometheus_server()
 server.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
@@ -91,7 +98,7 @@ def generate(current_user):
     user_data = request.get_json()
     score = app_utils.from_json_to_score(user_data)
     # TODO Call Model
-    result = score
+    result = model_utils.generate(score)
     global mongo_utils
     if mongo_utils is None:
         mongo_utils = app_utils.get_mongo_utils()

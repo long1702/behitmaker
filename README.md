@@ -30,40 +30,42 @@ Response Success
       "keySignature": "D",
       "saveName": "abc",
       "streamParts": [
-        [
-          {
-            "chord": [
-              "F/4",
-              "E/5",
-              "B#/4"
-            ],
-            "dur": "16"
+        [{
+           "chord": [
+            {
+                "note": "F/4"
+            },
+            {
+                "note": "E/5",
+            },
+            {
+                "note": "B#/4",
+            }],
+           "dur": "16"
           },
-          {
-            "dur": "8",
-            "note": "F"
-          },
-          {
-            "dur": "24",
+         {
+           "note": "B-",
+           "dur": "16"
+        },
+        {
             "keySignature": "B-",
-            "note": "F"
-          },
-          {
-            "dur": "4",
-            "note": "F"
-          }
+            "note": "F",
+            "dur": "24"
+        },
+        {
+            "note": "F",
+            "dur": "4"
+        }
         ],
-        [
-          {
-            "dur": "16",
-            "note": "F"
+        [{
+           "note": "F",
+           "dur": "16"
           },
-          {
-            "dur": "8",
-            "note": "F"
-          }
-        ]
-      ],
+            {
+                "note": "F",
+                "dur": "16"
+            }
+        ]],
       "timeSignature": "3/4"
     }
   ],
@@ -82,29 +84,39 @@ Status  |   Meaning
     "keySignature": "D",
     "streamParts": [
         [{
-           "chord": ["F/4", "E/5", "B#/4"],
+           "chord": [
+            {
+                "note": "F/4"
+            },
+            {
+                "note": "E/5",
+            },
+            {
+                "note": "B#/4",
+            }],
            "dur": "16"
           },
          {
-           "note": "F/4",
-           "dur": "8"
+           "note": "B-",
+           "dur": "16"
         },
         {
             "keySignature": "B-",
-            "note": "F/4",
+            "note": "F",
             "dur": "24"
         },
-        {//no note or chords means Rest
+        {
+            "note": "F",
             "dur": "4"
-        },
+        }
         ],
         [{
-           "note": "F/4",
+           "note": "F",
            "dur": "16"
           },
             {
-                "note": "F/4",
-                "dur": "8"
+                "note": "F",
+                "dur": "16"
             }
         ]]
 }
@@ -115,7 +127,17 @@ Response
     "keySignature": "D",
     "streamParts": [
         [{
-           "chord": ["F/4", "E/5", "B#/4"],
+           "chord": [
+            {
+                "note": "F/4",
+                "tie": "start" //this is for legato note or chord
+            },
+            {
+                "note": "E/5"
+            },
+            {
+                "note": "B#/4"
+            }],
            "dur": "16"
           },
          {

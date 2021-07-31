@@ -2,10 +2,13 @@ from ..music_transformer.transform import *
 
 class MultitrackItem():
     def __init__(self, melody:MusicItem, chords:MusicItem, stream=None):
-        self.melody,self.chords = melody, chords
+        self.melody, self.chords = melody, chords
         self.vocab = melody.vocab
         self._stream = stream
-        
+
+    def __len__(self):
+        return len(self.melody)
+
     @classmethod
     def from_file(cls, midi_file, vocab):
         return cls.from_stream(file2stream(midi_file), vocab)

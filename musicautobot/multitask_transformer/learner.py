@@ -60,7 +60,6 @@ class MultitaskLearner(Learner):
         sep_count = 0
         bar_len = SAMPLE_FREQ * 4 # assuming 4/4 time
         vocab = self.data.vocab
-
         repeat_count = 0
 
         for i in progress_bar(range(n_words), leave=True):
@@ -112,7 +111,8 @@ class MultitaskLearner(Learner):
             x = x.new_tensor([idx])
             pos = pos.new_tensor([last_pos])
 
-        pred = vocab.to_music_item(np.array(new_idx))
+        pred = vocab.to_music_item(new_idx)
+        print(len(pred.data))
         full = item.append(pred)
         return pred, full
 
@@ -238,10 +238,10 @@ class MultitaskLearner(Learner):
         return vocab.to_music_item(np.array(targ))
     
 # High level prediction functions from midi file
-def nw_predict_from_midi(learn, midi=None, n_words=400, 
+def nw_predict_from_midi(learn, stream=None, n_words=400,
                       temperatures=(1.0,1.0), top_k=30, top_p=0.6, seed_len=None, **kwargs):
     vocab = learn.data.vocab
-    seed = MusicItem.from_file(midi, vocab) if not is_empty_midi(midi) else MusicItem.empty(vocab)
+    seed = MusicItem.from_stream(stream, vocab) #if not is_empty_midi(stream) else MusicItem.empty(vocab)
     if seed_len is not None: seed = seed.trim_to_beat(seed_len)
         
     pred, full = learn.predict_nw(seed, n_words=n_words, temperatures=temperatures, top_k=top_k, top_p=top_p, **kwargs)
@@ -249,7 +249,7 @@ def nw_predict_from_midi(learn, midi=None, n_words=400,
 
 def s2s_predict_from_midi(learn, midi=None, n_words=200, 
                       temperatures=(1.0,1.0), top_k=24, top_p=0.7, seed_len=None, pred_melody=True, **kwargs):
-    multitrack_item = MultitrackItem.from_file(midi, learn.data.vocab)
+    multitrack_item = MultitrackItem.from_stream(midi, learn.data.vocab)
     melody, chords = multitrack_item.melody, multitrack_item.chords
     inp, targ = (chords, melody) if pred_melody else (melody, chords)
     
