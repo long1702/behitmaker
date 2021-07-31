@@ -49,7 +49,7 @@ server = Flask(__name__)
 CORS(server)
 model_utils.init_model()
 start_prometheus_server()
-server.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+server.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'gangofbede')
 
 
 def token_required(f):
